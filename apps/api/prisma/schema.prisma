@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Question {
+  id         String      @id @default(cuid())
+  rawText    String
+  createdAt  DateTime    @default(now())
+  experiment Experiment?
+}
+
+model Experiment {
+  id                String             @id @default(cuid())
+  questionId        String             @unique
+  question          Question           @relation(fields: [questionId], references: [id])
+
+  instrument        String             // e.g. "NIFTY"
+  condition         String             // e.g. "Daily close falls >= 1.5% vs previous close"
+  entry             String             // e.g. "Buy at next day's open"
+  exit              String?            // e.g. "Sell at close, N days later"
+  holdingPeriodDays Int?               // null until resolved
+  testPeriodStart   DateTime?
+  testPeriodEnd     DateTime?
+  costAssumptions   String?            // e.g. "0.1% slippage + brokerage per trade"
+  hypothesis        String             // e.g. "This strategy produces positive average returns"
+
+  status            String             @default("DRAFT")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  clarifications    Clarification[]
+  result            TestResult?
+}
+
+model Clarification {
+  id           String               @id @default(cuid())
+  experimentId String
+  experiment   Experiment           @relation(fields: [experimentId], references: [id])
+
+  field        String               // e.g. "holdingPeriodDays"
+  promptText   String               // the question shown, or the assumption text shown
+  source       String               // ASSUMED | USER_CONFIRMED | USER_PROVIDED
+  value        String               // resolved value, stored as text; parse per field on read
+  createdAt    DateTime             @default(now())
+
+  @@unique([experimentId, field])
+}
+
+model TestResult {
+  id                String     @id @default(cuid())
+  experimentId      String     @unique
+  experiment        Experiment @relation(fields: [experimentId], references: [id])
+
+  dataSource        String     // e.g. "nifty_daily_2021_2024.csv"
+  sampleSize        Int        // how many matching events were found
+  avgReturnPct      Float      // average return over the holding period after a match
+  baselineReturnPct Float      // average return over the same holding period on any day
+  hitRatePct        Float?     // % of matches that were profitable
+
+  summaryText       String     // factual: "What the data shows"
+  conclusionText     String    // interpretive: "What we conclude"
+  nextSteps         String?    // suggested follow-up questions to investigate
+
+  createdAt         DateTime   @default(now())
+}
