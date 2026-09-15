@@ -1,0 +1,175 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #0066cc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.backButton {
+  align-self: flex-start;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+}
+
+.stepCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #999;
+  transition: all 0.3s;
+  z-index: 1;
+}
+
+.stepCircle.active {
+  border-color: #0066cc;
+  background: #0066cc;
+  color: #fff;
+}
+
+.stepCircle.completed {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: #fff;
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #999;
+  text-align: center;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+.stepLabel.activeLabel {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.stepLine {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  right: -50%;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 0;
+}
+
+.stepLine.completedLine {
+  background: #16a34a;
+}
+
+.step:last-child .stepLine {
+  display: none;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.footer {
+  padding: 1.5rem;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+  margin-top: auto;
+}
+
+.footer p {
+  font-size: 0.75rem;
+  color: #999;
+  margin: 0;
+}

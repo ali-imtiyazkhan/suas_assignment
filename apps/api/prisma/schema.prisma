@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -29,12 +29,19 @@ model Experiment {
   costAssumptions   String?            // e.g. "0.1% slippage + brokerage per trade"
   hypothesis        String             // e.g. "This strategy produces positive average returns"
 
-  status            String             @default("DRAFT")
+  status            ExperimentStatus   @default(DRAFT)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
   clarifications    Clarification[]
   result            TestResult?
+}
+
+enum ExperimentStatus {
+  DRAFT
+  CLARIFYING
+  READY
+  TESTED
 }
 
 model Clarification {
@@ -44,11 +51,17 @@ model Clarification {
 
   field        String               // e.g. "holdingPeriodDays"
   promptText   String               // the question shown, or the assumption text shown
-  source       String               // ASSUMED | USER_CONFIRMED | USER_PROVIDED
+  source       ClarificationSource  // ASSUMED | USER_CONFIRMED | USER_PROVIDED
   value        String               // resolved value, stored as text; parse per field on read
   createdAt    DateTime             @default(now())
 
   @@unique([experimentId, field])
+}
+
+enum ClarificationSource {
+  ASSUMED
+  USER_CONFIRMED
+  USER_PROVIDED
 }
 
 model TestResult {

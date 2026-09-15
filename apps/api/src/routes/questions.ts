@@ -12,11 +12,14 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "rawText is required" });
     }
 
+    console.log("Creating question:", rawText.trim());
     const question = await prisma.question.create({
       data: { rawText: rawText.trim() },
     });
+    console.log("Question created:", question.id);
 
     const parsed = await parseQuestion(rawText);
+    console.log("Parsed:", parsed.instrument, parsed.condition);
 
     const experiment = await prisma.experiment.create({
       data: {
@@ -42,6 +45,7 @@ router.post("/", async (req, res) => {
       },
       include: { clarifications: true },
     });
+    console.log("Experiment created:", experiment.id, "clarifications:", experiment.clarifications.length);
 
     return res.status(201).json({ experiment });
   } catch (err) {

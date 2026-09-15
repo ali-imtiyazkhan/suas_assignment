@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { prisma } from "../prismaClient";
 import { parseQuestion } from "../services/parseQuestion";
+import { string } from "zod";
 
 const router = Router();
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const experiment = await prisma.experiment.findUnique({
       where: { id },
@@ -15,11 +16,11 @@ router.get("/:id", async (req, res) => {
         question: true,
       },
     });
-    
+
     if (!experiment) {
       return res.status(404).json({ message: "Experiment not found" });
     }
-    
+
     return res.json({ experiment });
   } catch (error) {
     console.error("Error fetching experiment:", error);
@@ -30,17 +31,22 @@ router.get("/:id", async (req, res) => {
 router.patch("/:id/clarifications/:field", async (req, res) => {
   const { id, field } = req.params;
   const { value, source } = req.body;
-  
+
+  console.log("PATCH clarification:", { id, field, value, source });
+
   try {
     const experiment = await prisma.experiment.findUnique({
       where: { id },
       include: { clarifications: true },
     });
-    
+
+    console.log("Found experiment:", experiment?.id, experiment?.status);
+    console.log("Experiment clarifications:", experiment?.clarifications?.map((c: { field: string, source: string }) => ({ field: c.field, source: c.source })));
+
     if (!experiment) {
       return res.status(404).json({ message: "Experiment not found" });
     }
-    
+
     const clarification = await prisma.clarification.upsert({
       where: {
         experimentId_field: {
@@ -60,11 +66,13 @@ router.patch("/:id/clarifications/:field", async (req, res) => {
         source: source || "USER_PROVIDED",
       },
     });
-    
+
+    console.log("Clarification upserted:", clarification);
+
     const updateData: Record<string, unknown> = {};
     const numericFields = ["holdingPeriodDays"];
     const dateFields = ["testPeriodStart", "testPeriodEnd"];
-    
+
     if (numericFields.includes(field)) {
       updateData[field] = parseInt(value, 10);
     } else if (dateFields.includes(field)) {
@@ -72,12 +80,14 @@ router.patch("/:id/clarifications/:field", async (req, res) => {
     } else {
       updateData[field] = value;
     }
-    
+
     await prisma.experiment.update({
       where: { id },
       data: updateData,
     });
-    
+
+    console.log("Experiment updated");
+
     const allRequiredFields = [
       "instrument",
       "condition",
@@ -86,20 +96,22 @@ router.patch("/:id/clarifications/:field", async (req, res) => {
       "testPeriodStart",
       "testPeriodEnd",
     ];
-    
+
     const resolvedFields = experiment.clarifications
-      .filter(c => c.source !== "ASSUMED")
-      .map(c => c.field);
-    
+      .filter((c: { source: string; field: string }) => c.source !== "ASSUMED")
+      .map((c: { field: string }) => c.field);
+
     const allResolved = allRequiredFields.every(f => resolvedFields.includes(f));
-    
+
+    console.log("Resolved fields:", resolvedFields, "All resolved:", allResolved);
+
     if (allResolved && experiment.status !== "READY") {
       await prisma.experiment.update({
         where: { id },
         data: { status: "READY" },
       });
     }
-    
+
     return res.json({ clarification, status: allResolved ? "READY" : experiment.status });
   } catch (error) {
     console.error("Error updating clarification:", error);
@@ -109,9 +121,9 @@ router.patch("/:id/clarifications/:field", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { questionId, rawText } = req.body;
-  
+
   let experiment;
-  
+
   if (questionId) {
     experiment = await prisma.experiment.findUnique({
       where: { questionId },
@@ -121,9 +133,9 @@ router.post("/", async (req, res) => {
     const question = await prisma.question.create({
       data: { rawText },
     });
-    
+
     const parsed = await parseQuestion(rawText);
-    
+
     experiment = await prisma.experiment.create({
       data: {
         questionId: question.id,
@@ -151,7 +163,7 @@ router.post("/", async (req, res) => {
   } else {
     return res.status(400).json({ message: "Either questionId or rawText required" });
   }
-  
+
   return res.status(201).json({ experiment });
 });
 

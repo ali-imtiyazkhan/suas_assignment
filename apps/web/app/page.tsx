@@ -1,101 +1,63 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { submitQuestion } from "@/lib/api";
+import { AskForm } from "@/components/AskForm";
 import styles from "./page.module.css";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
-
 export default function Home() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (rawText: string) => {
+    setIsLoading(true);
+    try {
+      const { experiment } = await submitQuestion(rawText);
+      router.push(`/experiment/${experiment.id}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.dev/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+      <header className={styles.header}>
+        <div className={styles.logo}>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#0066cc"/>
+            <path d="M8 16L14 22L24 10" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
+        <h1 className={styles.title}>AI Trading Research Assistant</h1>
+        <p className={styles.subtitle}>
+          Turn vague trading questions into structured, testable experiments with historical data.
+        </p>
+      </header>
+
+      <main className={styles.main}>
+        <div className={styles.card}>
+          <AskForm onSubmit={handleSubmit} isLoading={isLoading} />
+        </div>
+
+        <div className={styles.examples}>
+          <h3 className={styles.examplesTitle}>Example Questions</h3>
+          <ul className={styles.examplesList}>
+            <li>"Does buying NIFTY after a sharp fall work?"</li>
+            <li>"What if I buy BankNIFTY when it drops 3% in a day?"</li>
+            <li>"Is selling NIFTY calls after a 2% rally profitable over 5 days?"</li>
+            <li>"Does buying the dip on NIFTY work with a 10-day hold?"</li>
+          </ul>
+        </div>
       </main>
+
       <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.dev?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turborepo.dev →
-        </a>
+        <p>
+          Prototype for AI Full-Stack Developer Intern assignment —
+          <span className={styles.disclaimer}>
+            Not financial advice. Backtest results are hypothetical and may not reflect real-world performance.
+          </span>
+        </p>
       </footer>
     </div>
   );

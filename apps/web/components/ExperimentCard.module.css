@@ -1,0 +1,129 @@
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.status {
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.statusDraft {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.statusClarifying {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.statusReady {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.statusTested {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.originalQuestion {
+  font-style: italic;
+  color: #666;
+  margin: 0 0 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background: #fafafa;
+  border-radius: 6px;
+  border-left: 3px solid #0066cc;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.fieldRow {
+  display: contents;
+}
+
+.fieldLabel {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.fieldValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  word-break: break-word;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.runButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.runButton:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.runButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.runButton:disabled,
+.runButton.testing {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.testedLabel {
+  font-weight: 600;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

@@ -96,7 +96,7 @@ Results:
   }
 }
 
-function fallbackGenerate(
+export function fallbackGenerate(
   experiment: {
     instrument: string;
     condition: string;

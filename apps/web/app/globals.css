@@ -1,13 +1,6 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #f8fafc;
+  --foreground: #1a1a1a;
 }
 
 html,
@@ -19,6 +12,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 * {
@@ -32,19 +26,11 @@ a {
   text-decoration: none;
 }
 
-.imgDark {
-  display: none;
+button {
+  font-family: inherit;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
-  }
+input,
+textarea {
+  font-family: inherit;
 }

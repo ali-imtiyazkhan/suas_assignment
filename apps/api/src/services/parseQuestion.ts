@@ -81,7 +81,7 @@ export async function parseQuestion(rawText: string): Promise<ParsedExperiment> 
   }
 }
 
-function fallbackParse(rawText: string): ParsedExperiment {
+export function fallbackParse(rawText: string): ParsedExperiment {
   const text = rawText.toLowerCase();
 
   let instrument = "NIFTY";
@@ -92,7 +92,7 @@ function fallbackParse(rawText: string): ParsedExperiment {
   }
 
   let condition = "Daily close falls >= 1.5% vs previous close";
-  const fallMatch = text.match(/fall[s]?\s*(?:of|by|>|>=)?\s*(\d+(?:\.\d+)?)\s*%/i);
+  const fallMatch = text.match(/fall[s]?\s*(?:of|by|>|>=)?\s*(\d+(?:\.\d+)?)\s*%/i) || text.match(/(\d+(?:\.\d+)?)\s*%\s*fall/i);
   if (fallMatch) {
     condition = `Daily close falls >= ${fallMatch[1]}% vs previous close`;
   } else if (text.includes("sharp fall") || text.includes("big drop") || text.includes("crash")) {
